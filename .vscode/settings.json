@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MurphIsDead.sln"
+    "dotnet.defaultSolution": "Murph-is-DED.sln"
 }
