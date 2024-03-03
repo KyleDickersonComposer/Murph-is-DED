@@ -22,7 +22,6 @@ namespace Game.Pathfinding
 
        private PlatformPathfindingManager _platformPFManager;
        private bool _foldoutAllNodesList = false;
-       private HashSet<Node> _visitedNodes = new HashSet<Node>();
        
        private void RenameNodes()
        {
@@ -73,7 +72,6 @@ namespace Game.Pathfinding
             }
 
             //Debug.Log("Showing nodes");
-            _visitedNodes.Clear();
             for(int i = 0; i < _platformPFManager.allNodes.Count; i++)
             {
                 Node current = _platformPFManager.allNodes[i];
@@ -92,13 +90,9 @@ namespace Game.Pathfinding
                     Handles.color = Color.white;
                     foreach(Node neighbour in current.Neighbours)
                     {
-                        if(!_visitedNodes.Contains(neighbour))
-                        {
-                            Handles.DrawLine(current.transform.position, neighbour.transform.position);
-                        }
+                        Handles.DrawLine(current.transform.position, neighbour.transform.position);
                     }
                 }
-                _visitedNodes.Add(current);
             }
         }
 
@@ -112,12 +106,25 @@ namespace Game.Pathfinding
             
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Heuristic Type: ",_inspectorSkin.label);
-            _platformPFManager.heuristicType = (HeuristicType)EditorGUILayout.EnumPopup((HeuristicType)_heuristicTypeProp.enumValueFlag);
+            EditorGUI.BeginChangeCheck();
+            var heuristicType = (HeuristicType)EditorGUILayout.EnumPopup((HeuristicType)_heuristicTypeProp.enumValueFlag);
+            if(EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(target,"Heuristic Type");
+                _platformPFManager.heuristicType = heuristicType;
+            }
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Calculator Patience: ",_inspectorSkin.label);
-            _platformPFManager.calculatorPatience = EditorGUILayout.IntField(_calculatorPatienceProp.intValue);
+            EditorGUI.BeginChangeCheck();
+            int calculatorPatience = EditorGUILayout.IntField(_calculatorPatienceProp.intValue);
+            if(EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(target, "Calculator Patience");
+                _platformPFManager.calculatorPatience = calculatorPatience;
+            }
+
             EditorGUILayout.EndHorizontal();
 
             _foldoutAllNodesList = EditorGUILayout.Foldout(_foldoutAllNodesList,"All Nodes: ");
