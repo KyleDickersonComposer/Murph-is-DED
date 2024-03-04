@@ -22,6 +22,14 @@ namespace Game.PlayerManagement
         [Min(0.1f)]
         [SerializeField]private float jumpTime = 1.0f;
 
+        [Min(0.5f)]
+        [SerializeField]private float fallMultiplier = 2.0f;
+
+        /*
+        [Min(0.1f)]
+        [SerializeField]private float extraJumpTime = 1.0f;
+        */
+
         [Header("Ground Check Settings: ")]
         [SerializeField]private Transform groundCheck;
 
@@ -39,26 +47,52 @@ namespace Game.PlayerManagement
         private float _moveInput = 0.0f;
         private int _currentJumps = 0;
 
+        private bool _isJumping = false;
+        /*
+        private bool _jumpHold = false;
+        private bool _jumpReleased = false;
+        */
+        private float _jumpTimeCounter = 0.0f;
+        private Vector2 _previousPos = Vector2.zero;
 
-        private void Jump()
+        private bool _isGrounded;
+        private bool _stoppedJumping = false;
+        private void HandleJump()
         {
-            var hit = Physics2D.Linecast(groundCheck.position , 
-                                groundCheck.position - Vector3.up * checkDistance,
-                                groundMask.value);
 
-            bool isGrounded = hit.collider != null;
-            if((isGrounded && _currentJumps == 0) || _currentJumps == 1)
+            if(_isJumping)
             {
-                
-                _currentJumps++;
-                _playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);    
-                //_playerRB.velocity = _playerRB.velocity + Vector2.up * _initialJumpVelocity;
-                if(_currentJumps == 2)
+                if((_isGrounded && _currentJumps == 0) || _currentJumps == 1)
                 {
-                    _currentJumps = 0;
+
+                    _currentJumps++;
+                    _playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+
+                    //_playerRB.velocity = _playerRB.velocity + Vector2.up * _initialJumpVelocity;
+                    if(_currentJumps == 2)
+                    {
+                        _currentJumps = 0;
+                    }
+                    _stoppedJumping = false;
                 }
             }
             
+            /*
+            if(_jumpHold && !_stoppedJumping)
+            {
+                if(_jumpTimeCounter > 0.0f)
+                {
+                    _playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+                    _jumpTimeCounter -= Time.deltaTime;
+                }
+            }
+            
+            if(_jumpReleased)
+            {
+                _jumpTimeCounter = 0.0f;
+                _stoppedJumping = true;
+            }
+            */
             
         }
 
@@ -78,6 +112,8 @@ namespace Game.PlayerManagement
             _gravity = (-2.0f * jumpHeight)/(halfJumpTime * halfJumpTime);
             _initialJumpVelocity = 2.0f * jumpHeight/halfJumpTime;//Mathf.Sqrt(-2.0f * _gravity * jumpHeight); //
             _jumpForce = _playerRB.mass * (_initialJumpVelocity/halfJumpTime);
+
+
         }
 
         private void Awake() 
@@ -98,17 +134,42 @@ namespace Game.PlayerManagement
         {
             CalculateParameters();
             _moveInput = Input.GetAxisRaw("Horizontal");
-            if(Input.GetKeyDown(KeyCode.Space))
+            _isJumping = Input.GetKeyDown(KeyCode.Space);
+            /*
+            _jumpHold = Input.GetKey(KeyCode.Space);
+            _jumpReleased = Input.GetKeyUp(KeyCode.Space);
+            */
+            var hit = Physics2D.Linecast(groundCheck.position , 
+                                groundCheck.position - Vector3.up * checkDistance,
+                                groundMask.value);
+
+            _isGrounded = hit.collider != null;
+            /*
+            if(_isGrounded)
             {
-                Jump();
+                _jumpTimeCounter = extraJumpTime;
             }
+            */
+
+            HandleJump();
             UpdateGraphicsRotation();
         }
 
         private void FixedUpdate() 
         {
             _playerRB.AddForce(Vector2.right * _moveInput * movementMultiplier * moveForce, ForceMode2D.Impulse);
-            _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity);
+
+            //Gravity handling here.
+            bool isFalling = (_playerRB.position - _previousPos).y < 0.0f;
+            if(isFalling)
+            {
+                _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity * fallMultiplier);
+            }
+            else
+            {
+                _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity);
+            }
+            _previousPos = _playerRB.position;
         }
 
         private void OnDrawGizmosSelected() {
