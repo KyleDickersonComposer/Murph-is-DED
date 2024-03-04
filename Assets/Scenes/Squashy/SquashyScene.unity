@@ -856,6 +856,8 @@ MonoBehaviour:
   movementMultiplier: 1
   jumpHeight: 5
   jumpTime: 2
+  fallMultiplier: 5
+  extraJumpTime: 0.5
   groundCheck: {fileID: 1523066247}
   checkDistance: 0.2
   groundMask:

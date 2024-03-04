@@ -25,10 +25,10 @@ namespace Game.PlayerManagement
         [Min(0.5f)]
         [SerializeField]private float fallMultiplier = 2.0f;
 
-        /*
+        
         [Min(0.1f)]
         [SerializeField]private float extraJumpTime = 1.0f;
-        */
+        
 
         [Header("Ground Check Settings: ")]
         [SerializeField]private Transform groundCheck;
@@ -48,10 +48,10 @@ namespace Game.PlayerManagement
         private int _currentJumps = 0;
 
         private bool _isJumping = false;
-        /*
+        
         private bool _jumpHold = false;
         private bool _jumpReleased = false;
-        */
+        
         private float _jumpTimeCounter = 0.0f;
         private Vector2 _previousPos = Vector2.zero;
 
@@ -66,9 +66,9 @@ namespace Game.PlayerManagement
                 {
 
                     _currentJumps++;
-                    _playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+                    //_playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
 
-                    //_playerRB.velocity = _playerRB.velocity + Vector2.up * _initialJumpVelocity;
+                    _playerRB.velocity = new Vector2(_playerRB.velocity.x ,_initialJumpVelocity);
                     if(_currentJumps == 2)
                     {
                         _currentJumps = 0;
@@ -77,12 +77,12 @@ namespace Game.PlayerManagement
                 }
             }
             
-            /*
+            
             if(_jumpHold && !_stoppedJumping)
             {
                 if(_jumpTimeCounter > 0.0f)
                 {
-                    _playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+                    _playerRB.velocity = new Vector2(_playerRB.velocity.x ,_initialJumpVelocity);
                     _jumpTimeCounter -= Time.deltaTime;
                 }
             }
@@ -92,8 +92,22 @@ namespace Game.PlayerManagement
                 _jumpTimeCounter = 0.0f;
                 _stoppedJumping = true;
             }
-            */
             
+            
+        }
+
+        private void HandleGravity()
+        {
+            bool isFalling = (_playerRB.position - _previousPos).y < 0.0f;
+            if(isFalling)
+            {
+                _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity * fallMultiplier);
+            }
+            else
+            {
+                _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity);
+            }
+            _previousPos = _playerRB.position;
         }
 
         private void UpdateGraphicsRotation()
@@ -135,21 +149,21 @@ namespace Game.PlayerManagement
             CalculateParameters();
             _moveInput = Input.GetAxisRaw("Horizontal");
             _isJumping = Input.GetKeyDown(KeyCode.Space);
-            /*
+            
             _jumpHold = Input.GetKey(KeyCode.Space);
             _jumpReleased = Input.GetKeyUp(KeyCode.Space);
-            */
+            
             var hit = Physics2D.Linecast(groundCheck.position , 
                                 groundCheck.position - Vector3.up * checkDistance,
                                 groundMask.value);
 
             _isGrounded = hit.collider != null;
-            /*
+            
             if(_isGrounded)
             {
                 _jumpTimeCounter = extraJumpTime;
             }
-            */
+            
 
             HandleJump();
             UpdateGraphicsRotation();
@@ -160,16 +174,7 @@ namespace Game.PlayerManagement
             _playerRB.AddForce(Vector2.right * _moveInput * movementMultiplier * moveForce, ForceMode2D.Impulse);
 
             //Gravity handling here.
-            bool isFalling = (_playerRB.position - _previousPos).y < 0.0f;
-            if(isFalling)
-            {
-                _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity * fallMultiplier);
-            }
-            else
-            {
-                _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity);
-            }
-            _previousPos = _playerRB.position;
+            HandleGravity();
         }
 
         private void OnDrawGizmosSelected() {
