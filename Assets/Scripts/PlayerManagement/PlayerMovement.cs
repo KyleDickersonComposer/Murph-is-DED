@@ -13,6 +13,8 @@ namespace Game.PlayerManagement
 
         [Min(0.5f)]
         [SerializeField]private float movementMultiplier = 1;
+
+        [SerializeField]private ParticleSystem dustParticle;
         
         [Header("Jump Settings: ")]
         
@@ -163,7 +165,10 @@ namespace Game.PlayerManagement
             {
                 _jumpTimeCounter = extraJumpTime;
             }
-            
+            if(_moveInput != 0.0f && _isGrounded)
+            {
+                dustParticle.Play();
+            }
 
             HandleJump();
             UpdateGraphicsRotation();
@@ -172,6 +177,7 @@ namespace Game.PlayerManagement
         private void FixedUpdate() 
         {
             _playerRB.AddForce(Vector2.right * _moveInput * movementMultiplier * moveForce, ForceMode2D.Impulse);
+            
 
             //Gravity handling here.
             HandleGravity();
