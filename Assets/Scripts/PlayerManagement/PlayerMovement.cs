@@ -7,7 +7,12 @@ namespace Game.PlayerManagement
     public class PlayerMovement : MonoBehaviour
     {
         [Header("Movement Settings: ")]
+
+        [Min(0.5f)]
         [SerializeField]private float moveForce = 10.0f;
+
+        [Min(0.5f)]
+        [SerializeField]private float movementMultiplier = 1;
         
         [Header("Jump Settings: ")]
         
@@ -32,6 +37,7 @@ namespace Game.PlayerManagement
 
         private Rigidbody2D _playerRB;
         private float _moveInput = 0.0f;
+        private int _currentJumps = 0;
 
 
         private void Jump()
@@ -39,11 +45,20 @@ namespace Game.PlayerManagement
             var hit = Physics2D.Linecast(groundCheck.position , 
                                 groundCheck.position - Vector3.up * checkDistance,
                                 groundMask.value);
-            
-            if(hit.collider != null)
+
+            bool isGrounded = hit.collider != null;
+            if((isGrounded && _currentJumps == 0) || _currentJumps == 1)
             {
+                
+                _currentJumps++;
                 _playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);    
+                //_playerRB.velocity = _playerRB.velocity + Vector2.up * _initialJumpVelocity;
+                if(_currentJumps == 2)
+                {
+                    _currentJumps = 0;
+                }
             }
+            
             
         }
 
@@ -61,8 +76,8 @@ namespace Game.PlayerManagement
         {
             float halfJumpTime = jumpTime/2.0f;
             _gravity = (-2.0f * jumpHeight)/(halfJumpTime * halfJumpTime);
-            _initialJumpVelocity = 2.0f * jumpHeight/halfJumpTime;
-            _jumpForce = _playerRB.mass * (_initialJumpVelocity/jumpTime);
+            _initialJumpVelocity = 2.0f * jumpHeight/halfJumpTime;//Mathf.Sqrt(-2.0f * _gravity * jumpHeight); //
+            _jumpForce = _playerRB.mass * (_initialJumpVelocity/halfJumpTime);
         }
 
         private void Awake() 
@@ -92,7 +107,7 @@ namespace Game.PlayerManagement
 
         private void FixedUpdate() 
         {
-            _playerRB.AddForce(Vector2.right * _moveInput * moveForce, ForceMode2D.Impulse);
+            _playerRB.AddForce(Vector2.right * _moveInput * movementMultiplier * moveForce, ForceMode2D.Impulse);
             _playerRB.AddForce(Vector2.up * _playerRB.mass * _gravity);
         }
 

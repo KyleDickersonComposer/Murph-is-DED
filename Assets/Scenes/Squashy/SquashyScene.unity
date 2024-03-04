@@ -853,10 +853,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveForce: 1
-  jumpHeight: 2
-  jumpTime: 0.7
+  movementMultiplier: 1
+  jumpHeight: 5
+  jumpTime: 2
   groundCheck: {fileID: 1523066247}
-  checkDistance: 0.5
+  checkDistance: 0.2
   groundMask:
     serializedVersion: 2
     m_Bits: 1
@@ -906,7 +907,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1520851863}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.21958335, y: 3.6089478, z: -0.0041895797}
+  m_LocalPosition: {x: -0.21958335, y: 3.95, z: -0.0041895797}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
