@@ -259,7 +259,7 @@ MonoBehaviour:
   MasterBanks:
   - Master
   Banks:
-  - Test
+  - Ambience
   BanksToLoad: []
   LiveUpdatePort: 9264
   EnableMemoryTracking: 0
