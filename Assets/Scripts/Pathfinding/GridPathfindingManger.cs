@@ -39,6 +39,14 @@ namespace Game.Pathfinding
 
             if(nodeA == null || nodeB == null)
             {
+                if(nodeA == null)
+                {
+                    Debug.Log("Node A is null!");
+                }
+                if(nodeB == null)
+                {
+                    Debug.Log("Node B is null");
+                }
                 path = null;
                 return false;
             }
@@ -50,11 +58,6 @@ namespace Game.Pathfinding
             }
 
             return result;
-        }
-
-        public Vector2 GetNodePosition(GridNode node)
-        {
-            return GetWorldPosition(node.PositionInGrid) + Vector2.one * cellSize/2f;
         }
         public GridNode GetCellValue(int x,int y)
         {
@@ -79,7 +82,7 @@ namespace Game.Pathfinding
         }
         public Vector2 GetWorldPosition(int x, int y)
         {
-            return new Vector2(transform.position.x, transform.position.y) + new Vector2(x,y) * cellSize;
+            return new Vector2(transform.position.x, transform.position.y) + new Vector2(x,y) * cellSize + Vector2.one * cellSize/2f;
         }
 
         public Vector2Int GetXY(Vector2 worldPosition)
@@ -142,7 +145,7 @@ namespace Game.Pathfinding
         {
             GridNode neighbourNode = _grid[neigbourX, neighbourY];
             Vector2 worldPosition = GetWorldPosition(neigbourX, neighbourY);
-            if(Physics2D.OverlapCircle(worldPosition, cellSize, obstacleMask.value) == null)
+            if(Physics2D.OverlapCircle(worldPosition, cellSize/2f, obstacleMask.value) == null)
             {
                 neighbourList.Add(neighbourNode, CalculateHeuristicCost(originalNode, neighbourNode));
             }
@@ -236,7 +239,7 @@ namespace Game.Pathfinding
             {
                 for(int y = 0; y < height; y++)
                 {
-                    Vector2 cellWorldPosition = GetWorldPosition(x,y) + Vector2.one * cellSize/2f;
+                    Vector2 cellWorldPosition = GetWorldPosition(x,y);
                     DrawSquare(cellWorldPosition,cellSize - 0.1f,Color.white);
                 }
             }

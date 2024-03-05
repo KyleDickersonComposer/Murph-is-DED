@@ -21,8 +21,8 @@ namespace Game.Pathfinding
                     Debug.Log(gridPathfinding.GetWorldPosition(gridPathfinding.GetXY(clickedPosition)));
                     for(int i = 0; i < nodes.Count - 1; i++)
                     {
-                        Vector2 nodeAPos = gridPathfinding.GetNodePosition(nodes[i]);
-                        Vector2 nodeBPos = gridPathfinding.GetNodePosition(nodes[i+1]);
+                        Vector2 nodeAPos = gridPathfinding.GetWorldPosition(nodes[i].PositionInGrid);
+                        Vector2 nodeBPos = gridPathfinding.GetWorldPosition(nodes[i+1].PositionInGrid);
                         Debug.DrawLine(nodeAPos, nodeBPos, Color.red, 5.0f);
                     }
                 }
