@@ -66,15 +66,17 @@ namespace Game.PlayerManagement
             {
                 if((_isGrounded && _currentJumps == 0) || _currentJumps == 1)
                 {
-
+                    
+                    _jumpTimeCounter = extraJumpTime;
                     _currentJumps++;
                     //_playerRB.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
 
-                    _playerRB.velocity = new Vector2(_playerRB.velocity.x ,_initialJumpVelocity);
                     if(_currentJumps == 2)
                     {
                         _currentJumps = 0;
                     }
+
+                    _playerRB.velocity = new Vector2(_playerRB.velocity.x ,_initialJumpVelocity);
                     _stoppedJumping = false;
                 }
             }
@@ -92,6 +94,7 @@ namespace Game.PlayerManagement
             if(_jumpReleased)
             {
                 _jumpTimeCounter = 0.0f;
+                //_playerRB.velocity = new Vector2(_playerRB.velocity.x, 0.0f);
                 _stoppedJumping = true;
             }
             
@@ -161,10 +164,14 @@ namespace Game.PlayerManagement
 
             _isGrounded = hit.collider != null;
             
+            /*
             if(_isGrounded)
             {
                 _jumpTimeCounter = extraJumpTime;
+                //_stoppedJumping = true;
             }
+            */
+            
             if(_moveInput != 0.0f && _isGrounded)
             {
                 dustParticle.Play();
