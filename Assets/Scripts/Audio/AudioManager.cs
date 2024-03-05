@@ -64,9 +64,6 @@ namespace Game
             sfxBus.setVolume(sfxVolume);
             musicBus.setVolume(musicVolume);
             ambienceBus.setVolume(ambienceVolume);
-
-            musicBus.getVolume(out float v);
-            Debug.Log(v);
         }
 
         public void InitializeMusic(EventReference musicEventReference)
