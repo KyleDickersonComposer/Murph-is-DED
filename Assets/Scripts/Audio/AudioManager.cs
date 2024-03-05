@@ -52,8 +52,6 @@ namespace Game.Audio
             eventInstances = new List<EventInstance>();
             eventEmitters = new List<StudioEventEmitter>();
 
-
-
             InitializeMusic(FmodEvents.Instance.Music);
             InitalizeAmbience(FmodEvents.Instance.Ambience);
         }
@@ -76,6 +74,12 @@ namespace Game.Audio
         {
             ambienceInstance = CreateInstance(ambienceEventReference);
             ambienceInstance.start();
+        }
+
+        public void SetMusicParameter(string parameterName, int parameterValue)
+        {
+            musicEventInstance.setParameterByName(parameterName, parameterValue);
+
         }
 
         public void PlayOneShot(EventReference sound, Vector3 pos)
