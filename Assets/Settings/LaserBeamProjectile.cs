@@ -10,17 +10,20 @@ namespace Game
         [SerializeField]
         private float projectileSpeed = 1f;
 
-        private SpriteRenderer spriteRenderer;
-
-
-
         void Start()
         {
-            spriteRenderer = GetComponentInParent<SpriteRenderer>();
+            StartCoroutine(DestroyTimer());
         }
+
         void Update()
         {
             transform.Translate(projectileSpeed * Time.deltaTime * Vector2.right);
+        }
+
+        IEnumerator DestroyTimer()
+        {
+            yield return new WaitForSeconds(3f);
+            Destroy(gameObject);
         }
     }
 }

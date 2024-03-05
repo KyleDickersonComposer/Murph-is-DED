@@ -10,14 +10,10 @@ namespace Game.Starbase
         [Header("Change the BPM and Meter to hear a different Rhythmic Pulse")]
         [Range(0, 6)]
         [SerializeField]
-        private int musicChangeValue = 0;
-
-        public GameObject AudioManager;
-        private AudioManager manager;
-
+        public int musicChangeValue = 0;
+        public AudioManager manager;
         public void Start()
         {
-            manager = AudioManager.GetComponent<AudioManager>();
         }
         public void Update()
         {

@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Search;
+using Game.Starbase;
 using UnityEngine;
 
 namespace Game.Entities
@@ -11,14 +8,39 @@ namespace Game.Entities
         [Header("Projectile")]
         [SerializeField]
         private GameObject LaserBeamProjectile;
+        private GameObject StarbaseController;
+        private RhythmicPulseCallback Callback;
+        public FireState fireState;
 
-        [Header("Projectile Speed")]
-        [SerializeField]
-        private float projectileSpeed = 1f;
-
-        private void OnEnable()
+        public enum FireState
         {
-            GameObject Projectile = Instantiate(LaserBeamProjectile);
+            Ready,
+            Fired
+        }
+
+        void Awake()
+        {
+            StarbaseController = GameObject.FindGameObjectWithTag("GameController");
+        }
+        void Start()
+        {
+            Callback = StarbaseController.GetComponent<RhythmicPulseCallback>();
+            fireState = FireState.Ready;
+        }
+
+        void Update()
+        {
+            Debug.Log(Callback.PulseType.ToString());
+            if (Callback.PulseType == 0 && fireState == FireState.Ready)
+            {
+                Instantiate(LaserBeamProjectile, transform);
+                fireState = FireState.Fired;
+            }
+
+            if (Callback.PulseType == 1 && fireState == FireState.Fired)
+            {
+                fireState = FireState.Ready;
+            }
         }
     }
 }

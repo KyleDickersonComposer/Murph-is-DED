@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
+using FMOD;
 namespace Game.Audio
 {
     public class AudioManager : MonoBehaviour
@@ -79,7 +80,12 @@ namespace Game.Audio
         public void SetMusicParameter(string parameterName, int parameterValue)
         {
             musicEventInstance.setParameterByName(parameterName, parameterValue);
+        }
 
+        public float GetMusicParameter(string parameterName)
+        {
+            musicEventInstance.getParameterByName(parameterName, out float _, out float value);
+            return value;
         }
 
         public void PlayOneShot(EventReference sound, Vector3 pos)
