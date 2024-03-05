@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 
-namespace Game
+namespace Game.Audio
 {
     public class FmodEvents : MonoBehaviour
     {
