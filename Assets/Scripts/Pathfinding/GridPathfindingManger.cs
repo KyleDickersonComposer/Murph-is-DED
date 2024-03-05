@@ -22,8 +22,73 @@ namespace Game.Pathfinding
         [Min(1000)]
         [SerializeField]private int calculatorPatience = 1000;
         [SerializeField]private LayerMask obstacleMask;
+        [SerializeField]private bool displayGrid = false;
         private Pathfinder<GridNode> _pathfinder;
         private GridNode[,] _grid;
+
+        public int Height { get => height; }
+        public int Width { get => width; }
+        public float CellSize { get => cellSize; }
+        
+        
+
+        public bool FindPath(Vector2 first, Vector2 second, out List<GridNode> path)
+        {
+            var nodeA = GetCellValue(first);
+            var nodeB = GetCellValue(second);
+
+            if(nodeA == null || nodeB == null)
+            {
+                path = null;
+                return false;
+            }
+
+            bool result = _pathfinder.GenerateAstarPath(nodeA, nodeB, out path);
+            if(result)
+            {
+                path.Insert(0, nodeA);
+            }
+
+            return result;
+        }
+
+        public Vector2 GetNodePosition(GridNode node)
+        {
+            return GetWorldPosition(node.PositionInGrid) + Vector2.one * cellSize/2f;
+        }
+        public GridNode GetCellValue(int x,int y)
+        {
+            if((x>=0 && x < this.width) && (y>=0 && y < this.height))
+            {
+                return _grid[x,y];
+            }
+            return null;
+        }
+
+        public GridNode GetCellValue(Vector2 worldPosition)
+        {
+            Vector2Int cellPosInGrid = GetXY(worldPosition);
+            return GetCellValue(cellPosInGrid.x,cellPosInGrid.y);
+        }
+
+        
+
+        public Vector2 GetWorldPosition(Vector2Int posInGrid)
+        {
+            return GetWorldPosition(posInGrid.x,posInGrid.y);
+        }
+        public Vector2 GetWorldPosition(int x, int y)
+        {
+            return new Vector2(transform.position.x, transform.position.y) + new Vector2(x,y) * cellSize;
+        }
+
+        public Vector2Int GetXY(Vector2 worldPosition)
+        {
+            int x = Mathf.FloorToInt((worldPosition - new Vector2(transform.position.x, transform.position.y)).x/cellSize);
+            int y = Mathf.FloorToInt((worldPosition - new Vector2(transform.position.x, transform.position.y)).y/cellSize);
+        
+            return new Vector2Int(x,y);
+        }
 
         private float CalculateHeuristicCost(GridNode first, GridNode second)
         {
@@ -48,16 +113,10 @@ namespace Game.Pathfinding
 
         private float EuclideanHeuristic(GridNode first, GridNode second)
         {
-            return Vector2.SqrMagnitude(first.PositionInGrid - second.PositionInGrid);
-        }
+            Vector2 firstWorldPos = GetWorldPosition(first.PositionInGrid);
+            Vector2 secondWorldPos = GetWorldPosition(second.PositionInGrid);
 
-        public Vector2 GetWorldPosition(Vector2Int posInGrid)
-        {
-            return GetWorldPosition(posInGrid.x,posInGrid.y);
-        }
-        public Vector2 GetWorldPosition(int x, int y)
-        {
-            return new Vector2(transform.position.x, transform.position.y) + new Vector2(x,y) * cellSize;
+            return Vector2.SqrMagnitude(firstWorldPos - secondWorldPos);
         }
 
         private void DrawSquare(Vector2 worldPosition,float squareSize,Color squareColor)
@@ -98,52 +157,65 @@ namespace Game.Pathfinding
             //Left
             if(posInGrid.x - 1 >= 0)
             {
-                neighbourList.Add(_grid[posInGrid.x - 1, posInGrid.y], CalculateHeuristicCost(node, _grid[posInGrid.x - 1, posInGrid.y]));
                 //Down left
+                CheckNeighbour(posInGrid.x - 1, posInGrid.y, node,ref neighbourList); 
                 if(posInGrid.y - 1 >= 0)
                 {
-                    neighbourList.Add(_grid[posInGrid.x - 1,posInGrid.y - 1], CalculateHeuristicCost(node, _grid[posInGrid.x - 1,posInGrid.y - 1]));
+                    CheckNeighbour(posInGrid.x - 1, posInGrid.y - 1, node, ref neighbourList);
                 }
                 //Up Left.
                 if(posInGrid.y + 1 < height)
                 {
-                    neighbourList.Add(_grid[posInGrid.x - 1,posInGrid.y + 1], CalculateHeuristicCost(node, _grid[posInGrid.x - 1,posInGrid.y + 1]));
+                    CheckNeighbour(posInGrid.x - 1, posInGrid.y + 1, node, ref neighbourList);
                 }
             }
             //Right
             if(posInGrid.x + 1 < width)
             {
-                neighbourList.Add(_grid[posInGrid.x + 1, posInGrid.y], CalculateHeuristicCost(node, _grid[posInGrid.x + 1, posInGrid.y]));
+                CheckNeighbour(posInGrid.x + 1, posInGrid.y, node, ref neighbourList);
                 //Down Right
                 if(posInGrid.y - 1 >= 0)
                 {
-                    neighbourList.Add(_grid[posInGrid.x + 1,posInGrid.y - 1], CalculateHeuristicCost(node, _grid[posInGrid.x + 1,posInGrid.y - 1]));
+                    CheckNeighbour(posInGrid.x + 1,posInGrid.y - 1, node, ref neighbourList);
                 }
                 //Up Right.
                 if(posInGrid.y + 1 < height)
                 {
-                    neighbourList.Add(_grid[posInGrid.x + 1,posInGrid.y + 1], CalculateHeuristicCost(node, _grid[posInGrid.x + 1,posInGrid.y + 1]));
+                    CheckNeighbour(posInGrid.x + 1, posInGrid.y + 1, node, ref neighbourList);
                 }
             }
             //Up
             if(posInGrid.y - 1 >= 0)
             {
-                neighbourList.Add(_grid[posInGrid.x,posInGrid.y - 1], CalculateHeuristicCost(node, _grid[posInGrid.x,posInGrid.y - 1]));
+                CheckNeighbour(posInGrid.x, posInGrid.y - 1, node, ref neighbourList);
             }
             //Down
             if(posInGrid.y + 1 < height)
             {
-                neighbourList.Add(_grid[posInGrid.x,posInGrid.y + 1], CalculateHeuristicCost(node, _grid[posInGrid.x,posInGrid.y + 1]));
+                CheckNeighbour(posInGrid.x, posInGrid.y + 1, node, ref neighbourList);
             }
 
             return neighbourList;
         }
 
         private void Awake() {
+            _grid = new GridNode[width, height];
+            for(int i = 0; i < width; i++)
+            {
+                for(int j = 0; j < height; j++)
+                {
+                    _grid[i,j] = new GridNode(new Vector2Int(i, j));
+                }
+            }
+
             _pathfinder = new Pathfinder<GridNode>(CalculateHeuristicCost, GetNeighbours, calculatorPatience);
         }        
-        private void OnDrawGizmosSelected() 
+        private void OnDrawGizmos() 
         {
+            if(!displayGrid)
+            {
+                return;
+            }
             //For draw grid border.
             
             Vector3 origin = transform.position;
@@ -165,15 +237,7 @@ namespace Game.Pathfinding
                 for(int y = 0; y < height; y++)
                 {
                     Vector2 cellWorldPosition = GetWorldPosition(x,y) + Vector2.one * cellSize/2f;
-                    if(_grid != null && !_grid[x,y].Walkable)
-                    {
-                        DrawSquare(cellWorldPosition,cellSize - 0.1f,Color.red);
-                    }
-                    else
-                    {
-                        DrawSquare(cellWorldPosition,cellSize - 0.1f,Color.white);
-                    }
-
+                    DrawSquare(cellWorldPosition,cellSize - 0.1f,Color.white);
                 }
             }
 
