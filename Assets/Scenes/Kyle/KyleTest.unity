@@ -370,28 +370,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1519280807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Script: {fileID: 11500000, guid: cae182f41eb6a42f691645469ac45c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: 1423502833
-      Data2: 1081454078
-      Data3: 844539568
-      Data4: -1456046186
-    Path: event:/Ambience
-  Event: 
-  PlayEvent: 1
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params: []
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
+  masterVolume: 0.5
+  sfxVolume: 0.5
+  musicVolume: 0.5
+  ambienceVolume: 0.5
 --- !u!114 &1519280810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,25 +386,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1519280807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Script: {fileID: 11500000, guid: eea16cd41649142269aaecccb13cc66d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
+  <Ambience>k__BackingField:
+    Guid:
+      Data1: 1423502833
+      Data2: 1081454078
+      Data3: 844539568
+      Data4: -1456046186
+    Path: event:/A_Ambience
+  <Music>k__BackingField:
     Guid:
       Data1: 1802770491
       Data2: 1268542896
       Data3: -1970099783
       Data4: -551502681
-    Path: event:/Music
-  Event: 
-  PlayEvent: 1
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params: []
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
+    Path: event:/A_Music
